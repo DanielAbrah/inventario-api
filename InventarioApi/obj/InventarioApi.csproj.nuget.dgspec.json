@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "c:\\Users\\abrah\\Proyectos\\-Inventory-or-tasks-API-CRUD-authentication-validations-testing-with-xUnit-\\InventarioApi\\InventarioApi.csproj": {}
+    "C:\\Users\\abrah\\Proyectos\\-Inventory-or-tasks-API-CRUD-authentication-validations-testing-with-xUnit-\\InventarioApi\\InventarioApi.csproj": {}
   },
   "projects": {
-    "c:\\Users\\abrah\\Proyectos\\-Inventory-or-tasks-API-CRUD-authentication-validations-testing-with-xUnit-\\InventarioApi\\InventarioApi.csproj": {
+    "C:\\Users\\abrah\\Proyectos\\-Inventory-or-tasks-API-CRUD-authentication-validations-testing-with-xUnit-\\InventarioApi\\InventarioApi.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "c:\\Users\\abrah\\Proyectos\\-Inventory-or-tasks-API-CRUD-authentication-validations-testing-with-xUnit-\\InventarioApi\\InventarioApi.csproj",
+        "projectUniqueName": "C:\\Users\\abrah\\Proyectos\\-Inventory-or-tasks-API-CRUD-authentication-validations-testing-with-xUnit-\\InventarioApi\\InventarioApi.csproj",
         "projectName": "InventarioApi",
-        "projectPath": "c:\\Users\\abrah\\Proyectos\\-Inventory-or-tasks-API-CRUD-authentication-validations-testing-with-xUnit-\\InventarioApi\\InventarioApi.csproj",
+        "projectPath": "C:\\Users\\abrah\\Proyectos\\-Inventory-or-tasks-API-CRUD-authentication-validations-testing-with-xUnit-\\InventarioApi\\InventarioApi.csproj",
         "packagesPath": "C:\\Users\\abrah\\.nuget\\packages\\",
-        "outputPath": "c:\\Users\\abrah\\Proyectos\\-Inventory-or-tasks-API-CRUD-authentication-validations-testing-with-xUnit-\\InventarioApi\\obj\\",
+        "outputPath": "C:\\Users\\abrah\\Proyectos\\-Inventory-or-tasks-API-CRUD-authentication-validations-testing-with-xUnit-\\InventarioApi\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\abrah\\AppData\\Roaming\\NuGet\\NuGet.Config"
