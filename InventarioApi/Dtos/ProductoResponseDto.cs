@@ -1,9 +1,4 @@
 namespace InventarioApi.Dtos;
 
-public class ProductoResponseDto
-{
-    public int Id { get; set; }
-    public string Nombre { get; set; } = string.Empty;
-    public decimal Precio { get; set; }
-    public int Stock { get; set; }
-}
+/// <summary>Producto devuelto por la API.</summary>
+public sealed record ProductoResponseDto(int Id, string Nombre, decimal Precio, int Stock);
