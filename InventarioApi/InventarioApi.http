@@ -1,6 +1,85 @@
-@InventarioApi_HostAddress = http://localhost:5125
+@baseUrl = http://localhost:5125
+@token = reemplaza-por-token
+@productoId = 1
 
-GET {{InventarioApi_HostAddress}}/weatherforecast/
+### Registrar usuario
+POST {{baseUrl}}/api/auth/register
+Content-Type: application/json
+
+{
+  "email": "persona@example.com",
+  "password": "ContraseñaSegura123"
+}
+
+### Registrar el mismo usuario (409)
+POST {{baseUrl}}/api/auth/register
+Content-Type: application/json
+
+{
+  "email": "persona@example.com",
+  "password": "ContraseñaSegura123"
+}
+
+### Iniciar sesión
+POST {{baseUrl}}/api/auth/login
+Content-Type: application/json
+
+{
+  "email": "persona@example.com",
+  "password": "ContraseñaSegura123"
+}
+
+### Consultar perfil autenticado
+GET {{baseUrl}}/api/auth/me
+Authorization: Bearer {{token}}
+
+### Listar productos paginados y filtrados
+GET {{baseUrl}}/api/productos?pagina=1&tamano=10&buscar=teclado&precioMin=10&precioMax=100&ordenarPor=precio&direccion=asc
 Accept: application/json
 
-###
+### Listar productos sin filtros
+GET {{baseUrl}}/api/productos
+Accept: application/json
+
+### Obtener producto (404 si no existe)
+GET {{baseUrl}}/api/productos/{{productoId}}
+Accept: application/json
+
+### Crear producto (requiere token)
+POST {{baseUrl}}/api/productos
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "nombre": "Teclado mecánico",
+  "precio": 79.99,
+  "stock": 15
+}
+
+### Actualizar producto (requiere token)
+PUT {{baseUrl}}/api/productos/{{productoId}}
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "nombre": "Teclado mecánico actualizado",
+  "precio": 84.50,
+  "stock": 12
+}
+
+### Eliminar producto (requiere rol Admin)
+DELETE {{baseUrl}}/api/productos/{{productoId}}
+Authorization: Bearer {{token}}
+
+### Crear producto sin token (401)
+POST {{baseUrl}}/api/productos
+Content-Type: application/json
+
+{
+  "nombre": "Producto no autorizado",
+  "precio": 10,
+  "stock": 1
+}
+
+### Consultar producto inexistente (404)
+GET {{baseUrl}}/api/productos/999999
