@@ -1,101 +1,77 @@
-using InventarioApi.Data;
 using InventarioApi.Dtos;
-using InventarioApi.Models;
+using InventarioApi.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 namespace InventarioApi.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class ProductosController : ControllerBase
+public sealed class ProductosController(IProductoService productoService) : ControllerBase
 {
-    private readonly AppDbContext _context;
-
-    public ProductosController(AppDbContext context)
-    {
-        _context = context;
-    }
-
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<ProductoResponseDto>>> ObtenerTodos()
+    [AllowAnonymous]
+    [EndpointSummary("Lista productos con filtros y paginación.")]
+    [EndpointDescription("Permite buscar por nombre, filtrar por precio, ordenar y solicitar páginas de hasta 50 productos.")]
+    [ProducesResponseType(typeof(PagedResultDto<ProductoResponseDto>), StatusCodes.Status200OK)]
+    public async Task<ActionResult<PagedResultDto<ProductoResponseDto>>> ObtenerTodos(
+        [FromQuery] ProductoQueryDto consulta,
+        CancellationToken cancellationToken)
     {
-        var productos = await _context.Productos
-            .AsNoTracking()
-            .Select(p => new ProductoResponseDto
-            {
-                Id = p.Id,
-                Nombre = p.Nombre,
-                Precio = p.Precio,
-                Stock = p.Stock
-            })
-            .ToListAsync();
-
-        return Ok(productos);
+        return Ok(await productoService.ObtenerAsync(consulta, cancellationToken));
     }
 
-    [HttpGet("{id}")]
-    public async Task<ActionResult<ProductoResponseDto>> ObtenerPorId(int id)
+    [HttpGet("{id:int}")]
+    [AllowAnonymous]
+    [EndpointSummary("Obtiene un producto por su identificador.")]
+    [ProducesResponseType(typeof(ProductoResponseDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<ActionResult<ProductoResponseDto>> ObtenerPorId(int id, CancellationToken cancellationToken)
     {
-        var producto = await _context.Productos.FindAsync(id);
-
-        if (producto is null)
-            return NotFound();
-
-        return Ok(ADto(producto));
+        var producto = await productoService.ObtenerPorIdAsync(id, cancellationToken);
+        return producto is null ? NotFound() : Ok(producto);
     }
 
     [HttpPost]
-    public async Task<ActionResult<ProductoResponseDto>> Crear(ProductoCreateDto dto)
+    [Authorize]
+    [EndpointSummary("Crea un producto.")]
+    [ProducesResponseType(typeof(ProductoResponseDto), StatusCodes.Status201Created)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    public async Task<ActionResult<ProductoResponseDto>> Crear(
+        ProductoCreateDto dto,
+        CancellationToken cancellationToken)
     {
-        var producto = new Producto
-        {
-            Nombre = dto.Nombre,
-            Precio = dto.Precio,
-            Stock = dto.Stock
-        };
-
-        _context.Productos.Add(producto);
-        await _context.SaveChangesAsync();
-
-        return CreatedAtAction(nameof(ObtenerPorId), new { id = producto.Id }, ADto(producto));
+        var producto = await productoService.CrearAsync(dto, cancellationToken);
+        return CreatedAtAction(nameof(ObtenerPorId), new { id = producto.Id }, producto);
     }
 
-    [HttpPut("{id}")]
-    public async Task<IActionResult> Actualizar(int id, ProductoUpdateDto dto)
+    [HttpPut("{id:int}")]
+    [Authorize]
+    [EndpointSummary("Actualiza todos los datos de un producto.")]
+    [ProducesResponseType(typeof(ProductoResponseDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<ActionResult<ProductoResponseDto>> Actualizar(
+        int id,
+        ProductoUpdateDto dto,
+        CancellationToken cancellationToken)
     {
-        var producto = await _context.Productos.FindAsync(id);
-
-        if (producto is null)
-            return NotFound();
-
-        producto.Nombre = dto.Nombre;
-        producto.Precio = dto.Precio;
-        producto.Stock = dto.Stock;
-
-        await _context.SaveChangesAsync();
-        return NoContent();
+        var producto = await productoService.ActualizarAsync(id, dto, cancellationToken);
+        return producto is null ? NotFound() : Ok(producto);
     }
 
-    [HttpDelete("{id}")]
-    public async Task<IActionResult> Eliminar(int id)
+    [HttpDelete("{id:int}")]
+    [Authorize(Roles = "Admin")]
+    [EndpointSummary("Elimina un producto (solo Admin).")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> Eliminar(int id, CancellationToken cancellationToken)
     {
-        var producto = await _context.Productos.FindAsync(id);
-
-        if (producto is null)
-            return NotFound();
-
-        _context.Productos.Remove(producto);
-        await _context.SaveChangesAsync();
-
-        return NoContent();
+        var eliminado = await productoService.EliminarAsync(id, cancellationToken);
+        return eliminado ? NoContent() : NotFound();
     }
-
-    private static ProductoResponseDto ADto(Producto p) => new()
-    {
-        Id = p.Id,
-        Nombre = p.Nombre,
-        Precio = p.Precio,
-        Stock = p.Stock
-    };
 }
